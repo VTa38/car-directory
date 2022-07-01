@@ -6,11 +6,11 @@ import java.util.Date;
 
 public class Statistics {
 
-    private int carCount;
-    private String popularBrand;
-    private String popularColor;
-    private Date algerDateOfEntry;
-    private Date lastDateOfRefresh;
+    private int carCount = 0;
+    private String popularBrand = null;
+    private String popularColor = null;
+    private Date algerDateOfEntry = null;
+    private Date lastDateOfRefresh = null;
 
     public Statistics(StatisticsService collectStatistics) {
         carCount = collectStatistics.findCarCount();

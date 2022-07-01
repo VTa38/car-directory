@@ -59,7 +59,7 @@ public class StatisticsService {
                 return entry.getKey();
             }
         }
-        return "0";
+        return null;
     }
 
     public Set<String> findAllColor() {
@@ -89,7 +89,7 @@ public class StatisticsService {
                 return entry.getKey();
             }
         }
-        return "0";
+        return null;
     }
 
     public Set<String> findAllBrand() {
@@ -118,6 +118,4 @@ public class StatisticsService {
         }
         return lastDate;
     }
-
-
 }
