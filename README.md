@@ -6,96 +6,97 @@
 •	GET /cars/ - выводит весь список машин
 	В случае если записей не было список будет пуст
 
-•	GET /cars/id - выводит машину, с заданным id
+•	GET /cars/{id} - выводит машину, с заданным id
   Если нет машины с заданным id выйдет ошибка
 
-•	GET /cars/number - выводит машину, с заданным регистрационным номером
+•	GET /cars/number/{number} - выводит машину, с заданным регистрационным номером
   Если нет машины с заданным регистрационным номером выйдет ошибка
+  
+  •	GET /cars/brand/{brand} - выводит список машин, с заданной маркой
+  Если машин с заданной маркой нет список будет пустым
+  
+  •	GET /cars/color/{color} - выводит список машин, с заданным цветом
+  Если машин с заданным цветом нет список будет пустым
 
 •	POST /cars/ - принимает Json, на основе чего добавляет новую машину в базу данных. Пример Json запроса на добавление машины:
     {"number":"A888AA09","brand":"Rеno","color":"Black"}. (значения не могут быть пустыми)
 	В случае если машина уже есть в БД выйдет ошибка, существование определяется по регистрационным номерам в БД.
 
-•	POST /cars/delete – удаляет существующую машину по переданному id
+•	DELETE /cars/{id} – удаляет существующую машину по переданному id
 	В случае если машины с заданным id не было выйдет ошибка
 
-•	PUT /cars/update – обновляет информацию о существующей машине
+•	PUT /cars/{id} – обновляет информацию о существующей машине по переданному Json. Примеры Json запросов на обновление машины:
+    {"number":"A888AA09",color":"Black"}, {"number":"A888AA09"}, {color":"Black"}. (значения могут быть пустыми)
   В случае если указанной записи не было выйдет ошибка. Изменить можно номера (если такие номера уже есть в БД выйдет ошибка) и цвет. Марку сменить нельзя
 
-•	GET /cars/statistics – выводит статистику по справочнику: количество машин 
+•	GET /statistics – выводит статистику по справочнику: количество машин 
                                                             самая популярная марка
                                                             самый популярный цвет
                                                             дата первой записи
                                                             дата последнего обновления
 
-•	GET /cars/statistics/brand – выводит все уникальные марки автомобилей из списка
+•	GET /statistics/brands – выводит все уникальные марки автомобилей из списка
 
-•	GET /cars/statistics/color – выводит все уникальные цвета автомобилей из списка
+•	GET /statistics/colors – выводит все уникальные цвета автомобилей из списка
 
 
 О работе приложения:
-Записи о машинах хранятся в БД. В таблице cars записи, описывающие состояние машины: id, number, brand, color, date. Получение запроса происходит в классе CarController, который находится в пакете controllers. CarController поддерживает стандартные CRUD операции над таблицей cars, а так же может выдавать статистику по записям, список уникальных марок и цветов.
-![image](https://user-images.githubusercontent.com/67002782/176862287-604527fc-9cd5-474e-a314-ff73559823e7.png)
+Записи о машинах хранятся в БД. В таблице cars записи, описывающие состояние машины: id, number, brand, color, date. Получение запроса происходит в классах CarController и StatisticsController, которые находятся в пакете controllers. CarController поддерживает стандартные CRUD операции над таблицей cars, а также выводить список машин отильтрованный по цвету или марке. StatisticsController выводит статистику по списку машин, а также список уникальных цветов и марок. 
+![image](https://user-images.githubusercontent.com/67002782/177033572-930f30ec-d422-4ada-ad3a-ffb7f67cd70d.png)
 
 
-CarController не реализует никакой логики. CarController вызывает соответствующий метод из CarService, в котором реализована логика формирования ответа на запрос.
+CarController только вызывает соответствующий метод из CarService, в котором реализована логика формирования ответа на запрос.
 CarController:
-![image](https://user-images.githubusercontent.com/67002782/176862361-31a5d127-86c0-4e24-9fc0-3a466d1c2189.png)
-![image](https://user-images.githubusercontent.com/67002782/176862375-e97c0dbb-895a-4da5-bcde-b2a7dd03368c.png)
+![image](https://user-images.githubusercontent.com/67002782/177033669-18acc57c-9d1c-4b9f-822e-1e80e23e36fb.png)
+![image](https://user-images.githubusercontent.com/67002782/177033684-780d5f47-ee07-4755-ad80-3e5ef1060553.png)
 
 
-Ошибки, которые могут возникать в запросах, обрабатываются ExceptionHandler, который находится в пакете exception. Это ошибки при запросе (BAD_REQUEST), например неправильный Json при попытке добавить новую запись и ошибки при поиске записи в БД (NOT_FOUND), например: попытка обновления несуществующей записи.
-![image](https://user-images.githubusercontent.com/67002782/176862433-7a40666a-5112-4c73-80f1-f701ef4ee322.png)
+Ошибки, которые могут возникать в запросах, выводятся ExceptionController, который находится в пакете controller. В конструктор ошибки передаётся константные сообщение об ошибке и статус ошибки (NOT_FOUND или BAD_REQUEST)
+![image](https://user-images.githubusercontent.com/67002782/177033813-d5dac87d-0eac-448d-a745-58fc56836e87.png)
 
 
 Работа происходит с двумя моделями Car и Statistics
 Car, основная модель, с ней постоянно происходит работа. 
-![image](https://user-images.githubusercontent.com/67002782/176862464-ba54f411-e6a2-4acc-9b5f-3243474867d4.png)
-Car состоит из 5 параметров(id, number, brand, color, date) и 2 конструкторов(конструктор по умолчанию и конструктор с переменными: number, brand и color). Стандартные асессоры(Getter и Setter). Важный нюанс, явно задать дату нельзя, дата задаётся автоматически в момент создания экземпляра Car или обновляется с обновлением записи о машине. 
+![image](https://user-images.githubusercontent.com/67002782/177033838-1af53279-0d0e-485c-8b87-20af51838585.png)
+Car состоит из 5 параметров(id, number, brand, color, timestamp) и 2 конструкторов(конструктор по умолчанию и конструктор с переменными: number, brand и color). Стандартные асессоры(Getter и Setter). Важный нюанс, явно задать дату нельзя, дата задаётся автоматически в момент создания экземпляра Car или обновляется с обновлением записи о машине. 
 Переопределённые методы hashCode() и equals() в классе Car.
-![image](https://user-images.githubusercontent.com/67002782/176862596-1848d1f4-483d-4e9a-b11b-37be0a38076f.png)
-
+![image](https://user-images.githubusercontent.com/67002782/177033867-5b56cadc-72ca-49a6-8434-2cbe0b391544.png)
 
 CarRepository интерфейс для работы с таблицей cars 
-![image](https://user-images.githubusercontent.com/67002782/176862648-cb07c8bd-aaec-4de6-9d34-2ad2060b3707.png)
+![image](https://user-images.githubusercontent.com/67002782/177033880-caacb30c-f465-494e-b626-5f560423663f.png)
 
-Statistics, которая выдаётся только при запросе /cars/statistics.
+
+Statistics, которая выдаётся только при запросе /statistics.
 ![image](https://user-images.githubusercontent.com/67002782/176862690-ba80aaba-cf36-4fab-ba7b-1b8e6aff43be.png)
 Статистика выдаётся по требованию и не кэшируется, поэтому при каждом запросе статистики, статистика будет содержать актуальные данные.
 Статистику по записям и список уникальных марок и цветов собирает сервис StatisticsService:
+![image](https://user-images.githubusercontent.com/67002782/177033928-23ca3ee2-ba8b-43f8-92ad-dfe6837f5a7f.png)
 В нём все алгоритмы поиска необходимых данных, при этом он ничего не хранит и не кэширует, он просто собирает актуальные данные.
 
 
-
 POST запрос добавление новой машины
-![image](https://user-images.githubusercontent.com/67002782/176872497-22706939-fd0e-4b76-a330-06234010523f.png)
-
-GET запрос получение статистики
-![image](https://user-images.githubusercontent.com/67002782/176872948-8e0129dc-3eab-4aaf-a811-3128a2dd4441.png)
-
-GET запрос получение уникальных цветов
-![image](https://user-images.githubusercontent.com/67002782/176873271-f2c9dbbe-f61b-403e-b012-5380f2458627.png)
-
-GET запрос получение уникальных марок
-![image](https://user-images.githubusercontent.com/67002782/176873389-6e402119-29bb-48ad-9c83-ccb6ed9840c3.png)
+![image](https://user-images.githubusercontent.com/67002782/177034204-aeeb5a94-bdb1-4574-b521-9ebe31c758e1.png)
 
 GET запросы получение списка всех машин
-![image](https://user-images.githubusercontent.com/67002782/176873608-c3521e73-c673-43c0-8191-caec079deab5.png)
+![image](https://user-images.githubusercontent.com/67002782/177034218-34d1560e-c591-4f47-be2a-79d686ee5dce.png)
 
 GET запрос на получение машины по id
-![image](https://user-images.githubusercontent.com/67002782/176874271-8c35b480-0df7-43bf-9f44-6014c24db286.png)
+![image](https://user-images.githubusercontent.com/67002782/177034243-858c1946-c48b-498d-8585-41e91936fb1e.png)
 
 GET запрос на получение машины по регистрационному номеру
-![image](https://user-images.githubusercontent.com/67002782/176874468-a0af27bc-c197-494f-a434-c1b0eda2b8cb.png)
-
-POST запрос на удаление записи
-![image](https://user-images.githubusercontent.com/67002782/176874071-b9593b28-b2c1-40fb-8452-eae8a7f45f09.png)
+![image](https://user-images.githubusercontent.com/67002782/177034260-b83a25ef-5f07-4427-8049-1df76d53d961.png)
 
 PUT запрос на изменение записи
-![image](https://user-images.githubusercontent.com/67002782/176874661-f861fc09-d7ef-4aa5-a8c4-b1324a838791.png)
+![image](https://user-images.githubusercontent.com/67002782/177034280-348371c7-ab9b-4918-90d4-75709dcbedbc.png)
 
+DELETE запрос на удаление записи
+![image](https://user-images.githubusercontent.com/67002782/177034297-a05ac40c-c64c-4d7a-879f-dab03109c8c8.png)
 
+GET запрос получение статистики
+![image](https://user-images.githubusercontent.com/67002782/177034306-eb2f66d4-666d-4345-9eb8-cd63b1425aab.png)
 
+GET запрос получение уникальных цветов
+![image](https://user-images.githubusercontent.com/67002782/177034362-d7683d1a-a2a9-48ae-a90e-a0909c02d48d.png)
 
-
-
+GET запрос получение уникальных марок
+![image](https://user-images.githubusercontent.com/67002782/177034368-ab58deb4-41a6-4b20-98d4-6107987a667e.png)
