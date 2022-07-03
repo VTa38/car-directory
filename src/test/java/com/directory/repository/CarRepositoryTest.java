@@ -1,6 +1,16 @@
 package com.directory.repository;
 
-/*
+
+import com.directory.model.Car;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest
 class CarRepositoryTest {
 
@@ -138,4 +148,4 @@ class CarRepositoryTest {
         assertThat(isFind).isFalse();
         underTestCarRepository.delete(carTest);
     }
-}*/
+}
