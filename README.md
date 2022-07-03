@@ -100,3 +100,4 @@ GET запрос получение уникальных цветов
 
 GET запрос получение уникальных марок
 ![image](https://user-images.githubusercontent.com/67002782/177034368-ab58deb4-41a6-4b20-98d4-6107987a667e.png)
+
