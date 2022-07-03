@@ -1,31 +1,19 @@
 package com.directory.model;
 
-import com.directory.service.StatisticsService;
-
 import java.util.Date;
 
-public class Statistics {
-
-    private int carCount = 0;
-    private String popularBrand = null;
-    private String popularColor = null;
-    private Date algerDateOfEntry = null;
-    private Date lastDateOfRefresh = null;
-
-    public Statistics(StatisticsService collectStatistics) {
-        carCount = collectStatistics.findCarCount();
-        popularBrand = collectStatistics.findPopularBrand();
-        popularColor = collectStatistics.findPopularColor();
-        algerDateOfEntry = collectStatistics.findAlgerDateOfEntry();
-        lastDateOfRefresh = collectStatistics.findLastDateOfRefresh();
-    }
+public record Statistics(int carCount,
+                         String popularBrand,
+                         String popularColor,
+                         Date firsUpdateDate,
+                         Date lastUpdateDate) {
 
     public int getCarCount() {
         return carCount;
     }
 
-    public Date getAlgerDateOfEntry() {
-        return algerDateOfEntry;
+    public Date getFirsUpdateDate() {
+        return firsUpdateDate;
     }
 
     public String getPopularColor() {
@@ -36,7 +24,7 @@ public class Statistics {
         return popularBrand;
     }
 
-    public Date getLastDateOfRefresh() {
-        return lastDateOfRefresh;
+    public Date getLastUpdateDate() {
+        return lastUpdateDate;
     }
 }

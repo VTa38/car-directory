@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 public class Car {
-    private static Calendar calendar = new GregorianCalendar();
+    private static final Calendar calendar = new GregorianCalendar();
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -22,26 +22,28 @@ public class Car {
     @Column(nullable = false)
     private String color;
 
-    private Date date;
+    private Date timestamp;
 
-    public Date getDate() {
-        return this.date;
+    public Date getTimestamp() {
+        if (timestamp == null)
+            modifyTimestamp();
+        return timestamp;
     }
 
     public Car() {
-        date = calendar.getTime();
+        timestamp = calendar.getTime();
     }
 
     public Car(String number, String brand, String color) {
         this.number = number;
         this.brand = brand;
         this.color = color;
-        date = calendar.getTime();
+        this.timestamp = calendar.getTime();
     }
 
     // Обновляет дату. Явно задать дату нельзя, только обновить при необходимости
-    public void setDate() {
-        this.date = calendar.getTime();
+    public void modifyTimestamp() {
+        this.timestamp = calendar.getTime();
     }
 
     public Long getId() {
@@ -77,30 +79,15 @@ public class Car {
     }
 
     @Override
-    public int hashCode() {
-        return id.hashCode() + number.hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Car car = (Car) o;
+        return id.equals(car.id) && number.equals(car.number) && brand.equals(car.brand) && color.equals(car.color);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-
-        if (obj.getClass() != this.getClass()) {
-            return false;
-        }
-
-        final Car other = (Car) obj;
-        if (!Objects.equals(this.number, other.number)) {
-            return false;
-        }
-        if (!Objects.equals(this.brand, other.brand)) {
-            return false;
-        }
-        if (!Objects.equals(this.color, other.color)) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(id, number, brand, color);
     }
 }

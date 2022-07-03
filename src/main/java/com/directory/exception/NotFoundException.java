@@ -1,15 +1,10 @@
 package com.directory.exception;
 
-public class NotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-    public NotFoundException() {
-    }
+public class NotFoundException extends HttpStatusException {
 
-    public NotFoundException(String message) {
-        super(message);
-    }
-
-    public NotFoundException(String message, Throwable cause) {
-        super(message, cause);
+    public NotFoundException(String message, HttpStatus status) {
+        super(message, status);
     }
 }
